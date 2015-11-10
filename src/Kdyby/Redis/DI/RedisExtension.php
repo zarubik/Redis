@@ -83,9 +83,17 @@ class RedisExtension extends Nette\DI\CompilerExtension
 			->addSetup('$renderPanel', array($config['debugger']));
 
 		if ($config['journal']) {
-			$builder->addDefinition($this->prefix('cacheJournal'))
+			$journalConfig = Nette\DI\Config\Helpers::merge(is_array($config['journal']) ? $config['journal'] : array(), array(
+				'prefix' => NULL,
+			));
+			
+			$cacheJournal = $builder->addDefinition($this->prefix('cacheJournal'))
 				->setClass('Kdyby\Redis\RedisLuaJournal');
 
+			if($journalConfig['prefix']) {
+				$cacheJournal->addSetup('setPrefix', array($journalConfig['prefix']));
+			}
+			
 			// overwrite
 			$builder->removeDefinition('nette.cacheJournal');
 			$builder->addDefinition('nette.cacheJournal')->setFactory($this->prefix('@cacheJournal'));
@@ -94,6 +102,7 @@ class RedisExtension extends Nette\DI\CompilerExtension
 		if ($config['storage']) {
 			$storageConfig = Nette\DI\Config\Helpers::merge(is_array($config['storage']) ? $config['storage'] : array(), array(
 				'locks' => TRUE,
+				'prefix' => NULL,
 			));
 
 			$cacheStorage = $builder->addDefinition($this->prefix('cacheStorage'))
@@ -101,6 +110,10 @@ class RedisExtension extends Nette\DI\CompilerExtension
 
 			if (!$storageConfig['locks']) {
 				$cacheStorage->addSetup('disableLocking');
+			}
+
+			if($storageConfig['prefix']) {
+				$cacheStorage->addSetup('setPrefix', array($storageConfig['prefix']));
 			}
 
 			$builder->removeDefinition('cacheStorage');

@@ -44,6 +44,10 @@ class RedisLuaJournal extends Nette\Object implements Nette\Caching\Storages\IJo
 	 */
 	private $script = array();
 
+	/**
+	 * @var string
+	 */
+	private $prefix = NULL;
 
 
 	/**
@@ -105,6 +109,13 @@ class RedisLuaJournal extends Nette\Object implements Nette\Caching\Storages\IJo
 	}
 
 
+	/**
+	 * @param string $prefix
+	 */
+	public function setPrefix($prefix)
+	{
+		$this->prefix = $prefix;
+	}
 
 	private static function flattenDp($array)
 	{
@@ -127,6 +138,9 @@ class RedisLuaJournal extends Nette\Object implements Nette\Caching\Storages\IJo
 		$script = file_get_contents(__DIR__ . '/scripts/common.lua');
 		$script .= file_get_contents(__DIR__ . '/scripts/journal.' . $name . '.lua');
 
+		if($this->prefix){
+			$script = str_replace(self::NS_NETTE, $this->prefix, $script);
+		}
 		return $this->script[$name] = $script;
 	}
 

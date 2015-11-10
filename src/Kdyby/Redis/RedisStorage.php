@@ -55,6 +55,10 @@ class RedisStorage extends Nette\Object implements Nette\Caching\IStorage
 	 */
 	private $useLocks = TRUE;
 
+	/**
+	 * @var string
+	 */
+	private $prefix = self::NS_NETTE;
 
 
 	/**
@@ -277,6 +281,15 @@ class RedisStorage extends Nette\Object implements Nette\Caching\IStorage
 	}
 
 
+	/**
+	 * @param string $prefix
+	 */
+	public function setPrefix($prefix)
+	{
+		$this->prefix = $prefix;
+		return $this;
+	}
+
 
 	/**
 	 * @param string $key
@@ -284,7 +297,7 @@ class RedisStorage extends Nette\Object implements Nette\Caching\IStorage
 	 */
 	protected function formatEntryKey($key)
 	{
-		return self::NS_NETTE . ':' . str_replace(Cache::NAMESPACE_SEPARATOR, ':', $key);
+		return $this->prefix . ':' . str_replace(Cache::NAMESPACE_SEPARATOR, ':', $key);
 	}
 
 
