@@ -52,6 +52,10 @@ class Panel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 	 */
 	public $renderPanel = TRUE;
 
+	/**
+	 * @var string
+	 */
+	public $name;
 
 
 	public function begin($args)
